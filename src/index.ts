@@ -44,6 +44,10 @@ export class AwsKmsSigner extends ethers.Signer {
   }
 
   async signTransaction(transaction: ethers.utils.Deferrable<ethers.providers.TransactionRequest>): Promise<string> {
+    if (transaction.hasOwnProperty('from')) {
+      console.log("hmm... transaction object contains from attribute, removing it...");
+      delete transaction.from;
+    }
     const unsignedTx = await ethers.utils.resolveProperties(transaction);
     const serializedTx = ethers.utils.serializeTransaction(<UnsignedTransaction>unsignedTx);
     const transactionSignature = await this._signDigest(ethers.utils.keccak256(serializedTx));
